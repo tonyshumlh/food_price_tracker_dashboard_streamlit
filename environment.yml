@@ -1,4 +1,4 @@
-name: 'food_price_tracker'
+name: 'food_price_tracker_indiv'
 channels:
   - conda-forge
   - defaults
