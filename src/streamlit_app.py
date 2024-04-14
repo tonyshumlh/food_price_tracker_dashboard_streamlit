@@ -151,3 +151,8 @@ for row_num, row in enumerate(rows_l0):
     with row[2]:
         st.altair_chart(commodities_line[market], use_container_width=True)
 
+st.caption("""
+        Food Price Tracker is developed by Tony Shum.  
+        The application provides global food price visualization to enhance cross-sector collaboration on worldwide food-related challenges.  
+        [`Link to the Github Repo`](https://github.ubc.ca/MDS-2023-24/DSCI_532_individual-assignment_shumlh/)
+         """)
