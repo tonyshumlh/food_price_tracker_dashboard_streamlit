@@ -77,19 +77,17 @@ with st.sidebar:
 # Elements
 country_data = generate_food_price_index_data(country_data, pd.to_datetime(date_range), markets_dropdown, commodities_dropdown)
 country_data = generate_overall_data(country_data)
-commodities_line = generate_line_chart(
-    # country_data, pd.to_datetime(date_range), markets_dropdown, commodities_dropdown
-    country_data
-)
-commodities_figure = generate_figure_chart(
-    country_data
-)
+commodities_line = generate_line_chart(country_data)
+commodities_figure = generate_figure_chart(country_data)
+
 num_markets = len(markets_dropdown)
 num_commodities = len(commodities_dropdown)
 values_markets = ['Overall'] + markets_dropdown
 values_commodities = ['Food Price Index'] + commodities_dropdown
+num_block_row = math.floor(num_commodities**0.5)
+num_block_col = math.ceil(num_commodities/num_block_row)
 
-# Dashboard Main Panel
+# Dashboard Main Panel Layout
 rows_l0 = []
 for i in range(num_markets+1):
     rows_l1 = []
@@ -97,7 +95,7 @@ for i in range(num_markets+1):
     first_row = st.empty()
     rows_l1.append(first_row)
 
-    second_row = st.columns([4, 6], gap='small')
+    second_row = st.columns([2]+[1]*num_block_col, gap='small')
     rows_l1.append(second_row)
 
     third_row = st.empty()
@@ -110,10 +108,6 @@ for i in range(num_markets+1):
 
 # Dashboard Detail
 for row_num, row in enumerate(rows_l0):
-    # To be refactored
-    num_row = math.floor(num_commodities**0.5)
-    num_col = math.ceil(num_commodities/num_row)
-
     with row[0]:
         market = values_markets[row_num]
         st.markdown(f'### {market}')
@@ -127,38 +121,32 @@ for row_num, row in enumerate(rows_l0):
         card_delta_mom = f"{card_data['mom'].iloc[0]:.2%} MoM"
         card_delta_yoy = f"{card_data['yoy'].iloc[0]:.2%} YoY"
         card_help = 'Food Price Index is the total price of selected commodities'
-        with st.container(border=True, height=125*num_row):
-            st.metric(label=card_name,
-                    value=card_value,
+        with st.container(border=True, height=125*num_block_row):
+            st.metric(label = card_name,
+                    value = card_value,
                     delta = (card_delta_mom if relative_change_dropdown == 'Month-over-Month' else card_delta_yoy),
                     help = card_help,
                     )
         commodity_num += 1
-
-    with row[1][1]:
-        # To be refactored
-        row_l2 = []
-        for i in range(num_row):
-            row_l2.append(st.columns(num_col, gap='small'))
             
-        for i in range(len(row_l2)):
-            for col_j in row_l2[i]:
-                with col_j:
-                    if commodity_num <= num_commodities:
-                        commodity = values_commodities[commodity_num]
-                        card_name = commodity
-                        card_data = commodities_figure[(commodities_figure['commodity'] == commodity) & (commodities_figure['market'] == market)]
-                        card_value = "${:.2f}".format(card_data['usdprice'].iloc[0])
-                        card_delta_mom = f"{card_data['mom'].iloc[0]:.2%} MoM"
-                        card_delta_yoy = f"{card_data['yoy'].iloc[0]:.2%} YoY"
-                        with st.container(border=True):
-                            st.metric(label=card_name,
-                                    value=card_value,
-                                    delta = (card_delta_mom if relative_change_dropdown == 'Month-over-Month' else card_delta_yoy),
-                                    )
-                        commodity_num += 1
-                    else:
-                        st.empty()
+    for col_num in range(num_block_col):
+        with row[1][col_num+1]:
+            for _ in range(num_block_row):
+                if commodity_num <= num_commodities:
+                    commodity = values_commodities[commodity_num]
+                    card_name = commodity
+                    card_data = commodities_figure[(commodities_figure['commodity'] == commodity) & (commodities_figure['market'] == market)]
+                    card_value = "${:.2f}".format(card_data['usdprice'].iloc[0])
+                    card_delta_mom = f"{card_data['mom'].iloc[0]:.2%} MoM"
+                    card_delta_yoy = f"{card_data['yoy'].iloc[0]:.2%} YoY"
+                    with st.container(border=True):
+                        st.metric(label = card_name,
+                                value = card_value,
+                                delta = (card_delta_mom if relative_change_dropdown == 'Month-over-Month' else card_delta_yoy),
+                                )
+                    commodity_num += 1
+                else:
+                    st.empty()
 
     with row[2]:
         st.altair_chart(commodities_line[market], use_container_width=True)
