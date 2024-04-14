@@ -4,7 +4,7 @@ import altair as alt
 import plotly.express as px
 import math
 
-# from fetch_data import fetch_country_data, fetch_country_index
+from fetch_data import fetch_country_index, fetch_country_data
 from plotting import *
 from calc_index import *
 from data_preprocess import get_clean_data
@@ -17,28 +17,26 @@ st.set_page_config(
 
 alt.themes.enable("dark")
 
-# Load data
-country_data = pd.read_csv(
-    'data/raw/wfp_food_prices_jpn.csv',
-    parse_dates=["date"],
-    header=0,
-    skiprows=[1],
-)
-country_data = get_clean_data(country_data)
-
 # Sidebar
 with st.sidebar:
     st.title('Food Price Tracker')
     
-    # country_options = country_index.index.to_list()
-    country_options = ['Japan']
+    ## Country
+    country_options = sorted(fetch_country_index().index.to_list())
     country_dropdown = st.selectbox(
         label='Country',
         options=country_options,
-        index=0,
+        index=country_options.index('Japan'),
+        placeholder="Select a country...",
         )
 
-    ## date
+# Load data
+country_data = fetch_country_data(country_dropdown)
+country_data = get_clean_data(country_data)
+
+# Sidebar
+with st.sidebar:
+    ## Date
     min_date_allowed = country_data.date.min()
     max_date_allowed = country_data.date.max()
     start_date = max(country_data.date.max() + pd.tseries.offsets.DateOffset(years=-2), country_data.date.min())
@@ -56,6 +54,7 @@ with st.sidebar:
     commodities_dropdown = st.multiselect(label='Commodities', 
                                           options=commodities_options, 
                                           default=commodities_selection,
+                                          placeholder="Select commodities...",
                                           )
 
     ## Market
@@ -64,6 +63,7 @@ with st.sidebar:
     markets_dropdown = st.multiselect(label='Markets', 
                                       options=markets_options, 
                                       default=markets_selection,
+                                      placeholder="Select markets...",
                                       )
     
     ## Relative Change
@@ -112,6 +112,7 @@ for row_num, row in enumerate(rows_l0):
         market = values_markets[row_num]
         st.markdown(f'### {market}')
 
+    ## Figure Chart
     with row[1][0]:
         commodity_num = 0
         commodity = values_commodities[commodity_num]
@@ -134,8 +135,8 @@ for row_num, row in enumerate(rows_l0):
             for _ in range(num_block_row):
                 if commodity_num <= num_commodities:
                     commodity = values_commodities[commodity_num]
-                    card_name = commodity
                     card_data = commodities_figure[(commodities_figure['commodity'] == commodity) & (commodities_figure['market'] == market)]
+                    card_name = f"{commodity} / {card_data['unit'].iloc[0]}"
                     card_value = "${:.2f}".format(card_data['usdprice'].iloc[0])
                     card_delta_mom = f"{card_data['mom'].iloc[0]:.2%} MoM"
                     card_delta_yoy = f"{card_data['yoy'].iloc[0]:.2%} YoY"
@@ -148,6 +149,7 @@ for row_num, row in enumerate(rows_l0):
                 else:
                     st.empty()
 
+    ## Line Chart
     with row[2]:
         st.altair_chart(commodities_line[market], use_container_width=True)
 
