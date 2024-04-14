@@ -5,9 +5,9 @@ import plotly.express as px
 import math
 
 # from fetch_data import fetch_country_data, fetch_country_index
-# from plotting import *
-# from calc_index import *
-# from data_preprocess import get_clean_data
+from plotting import *
+from calc_index import *
+from data_preprocess import get_clean_data
 
 # Page configuration
 st.set_page_config(
@@ -24,7 +24,7 @@ country_data = pd.read_csv(
     header=0,
     skiprows=[1],
 )
-#TBC data preprocess
+country_data = get_clean_data(country_data)
 
 # Sidebar
 with st.sidebar:
@@ -49,8 +49,6 @@ with st.sidebar:
         min_value=min_date_allowed,
         max_value=max_date_allowed,
         )
-    # df_selected_year = df_reshaped[df_reshaped.year == selected_year]
-    # df_selected_year_sorted = df_selected_year.sort_values(by="population", ascending=False)
 
     commodities_options = country_data.commodity.value_counts().index.tolist()
     commodities_selection = commodities_options[:2]
@@ -73,54 +71,87 @@ with st.sidebar:
         index=0,
         )
 
-# Dashboard Main Panel
-rows_l0 = []
+# Elements
+country_data = generate_food_price_index_data(country_data, pd.to_datetime(date_range), markets_dropdown, commodities_dropdown)
+commodities_line = generate_line_chart(
+    country_data, pd.to_datetime(date_range), markets_dropdown, commodities_dropdown
+)
+commodities_figure = generate_figure_chart(
+    country_data
+)
 num_markets = len(markets_dropdown)
 num_commodities = len(commodities_dropdown)
+values_markets = ['National'] + markets_dropdown
+values_commodities = ['Food Price Index'] + commodities_dropdown
+
+# Dashboard Main Panel
+rows_l0 = []
 for i in range(num_markets+1):
     rows_l1 = []
 
-    first_row = st.columns([4, 6], gap='medium')
+    first_row = st.empty()
     rows_l1.append(first_row)
 
-    second_row = st.container()
+    second_row = st.columns([4, 6], gap='medium')
     rows_l1.append(second_row)
 
-    third_row = st.divider()
+    third_row = st.empty()
     rows_l1.append(third_row)
+
+    fourth_row = st.divider()
+    rows_l1.append(fourth_row)
 
     rows_l0.append(rows_l1)
 
 # Dashboard Detail
-for row in rows_l0:
-    with row[0][0]:
-        st.markdown('#### 0')
+for row_num, row in enumerate(rows_l0):
+    with row[0]:
+        market = values_markets[row_num]
+        st.markdown(f'### {market}')
 
-        card_name = 'Index'
-        card_value = '$2.0'
-        card_delta1 = '-0.52% MoM'
-        card_delta2 = '-0.52% YoY'
+    with row[1][0]:
+        commodity_num = 0
+        commodity = values_commodities[commodity_num]
+        card_name = commodity
+        card_data = commodities_figure[(commodities_figure['commodity'] == commodity) & (commodities_figure['market'] == market)]
+        card_value = "${:.2f}".format(card_data['usdprice'].iloc[0])
+        card_delta_mom = f"{card_data['mom'].iloc[0]:.2%} MoM"
+        card_delta_yoy = f"{card_data['yoy'].iloc[0]:.2%} YoY"
         with st.container(border=True):
             st.metric(label=card_name,
                     value=card_value,
-                    delta=card_delta2
+                    delta = (card_delta_mom if relative_change_dropdown == 'Month-over-Month' else card_delta_yoy),
                     )
+        commodity_num += 1
 
-    with row[0][1]:
+    with row[1][1]:
+        # To be refactored
         num_row = math.floor(num_commodities**0.5)
         num_col = math.ceil(num_commodities/num_row)
         row_l2 = []
         for i in range(num_row):
             row_l2.append(st.columns(num_col, gap='small'))
+            
         for i in range(len(row_l2)):
             for col_j in row_l2[i]:
                 with col_j:
-                    with st.container(border=True):
-                        st.metric(label=card_name,
-                                value=card_value,
-                                delta=card_delta2
-                                )
+                    if commodity_num <= num_commodities:
+                        commodity = values_commodities[commodity_num]
+                        card_name = commodity
+                        card_data = commodities_figure[(commodities_figure['commodity'] == commodity) & (commodities_figure['market'] == market)]
+                        card_value = "${:.2f}".format(card_data['usdprice'].iloc[0])
+                        card_delta_mom = f"{card_data['mom'].iloc[0]:.2%} MoM"
+                        card_delta_yoy = f"{card_data['yoy'].iloc[0]:.2%} YoY"
+                        with st.container(border=True):
+                            st.metric(label=card_name,
+                                    value=card_value,
+                                    delta = (card_delta_mom if relative_change_dropdown == 'Month-over-Month' else card_delta_yoy),
+                                    )
+                        commodity_num += 1
+                    else:
+                        st.empty()
 
-    with row[1]:
-        st.markdown('#### 2')
-        st.write('Some chart')
+    with row[2]:
+        with st.container(border=True):
+            st.altair_chart(commodities_line[0], use_container_width=True)
+

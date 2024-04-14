@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-def generate_food_price_index_data(data, widget_market_values, widget_commodity_values):
+def generate_food_price_index_data(data, widget_date_range, widget_market_values, widget_commodity_values):
     """
     Generate food price index data based on the selected markets and commodities.
 
@@ -9,10 +9,10 @@ def generate_food_price_index_data(data, widget_market_values, widget_commodity_
     ----------
     data : pandas.DataFrame
         The dataset containing price information for various commodities across different markets.
-        
+    widget_date_range : tuple
+        A tuple containing the start and end dates for filtering the data.        
     widget_market_values : list
         A list of selected market names to filter the data.
-        
     widget_commodity_values : list
         A list of selected commodity names to include in the food price index calculation.
 
@@ -53,22 +53,25 @@ def generate_food_price_index_data(data, widget_market_values, widget_commodity_
     # Generate Food Price Index Data
     price_data = data[columns_to_keep]
     price_data = price_data[
-        (price_data.commodity.isin(widget_commodity_values))
+        price_data.date.between(
+            widget_date_range[0], widget_date_range[1]
+        )
+        & (price_data.commodity.isin(widget_commodity_values))
         & (price_data.market.isin(widget_market_values))
     ]
 
-    # Calculate index (formula: arithmetic average of the index by date and market)
+    # Calculate index (formula: sum of the index by date and market)
     index = (
         price_data.groupby(
             ["date", "market", "latitude", "longitude"]
         ).agg({
-            "usdprice": "mean"
+            "usdprice": "sum"
         })
     ).reset_index()
 
     # Aggregate price index back to the price data
     index['commodity'] = "Food Price Index"
-    index["unit"] = "PPL"
-    price_data = pd.concat((price_data, index), axis=0)
+    index["unit"] = "AGG"
+    price_data = pd.concat((price_data, index), axis=0, ignore_index=True)
 
     return price_data

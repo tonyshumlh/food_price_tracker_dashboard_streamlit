@@ -3,7 +3,7 @@ import pandas as pd
 import altair as alt
 alt.data_transformers.enable('vegafusion')
 
-def generate_figure_chart(data, widget_date_range, widget_market_values, widget_commodity_values):
+def generate_figure_chart(data):
     """
     Generate figure charts displaying the latest average price and period-over-period change for specified commodities.
 
@@ -45,8 +45,8 @@ def generate_figure_chart(data, widget_date_range, widget_market_values, widget_
     columns_to_keep = [
         "date",
         "market",
-        "latitude",
-        "longitude",
+        # "latitude",
+        # "longitude",
         "commodity",
         "unit",
         "usdprice",
@@ -54,20 +54,22 @@ def generate_figure_chart(data, widget_date_range, widget_market_values, widget_
 
     # Generate latest average price and period-over-period change
     price_data = data[columns_to_keep]
-    price_data = price_data[
-        price_data.date.between(
-            widget_date_range[0], widget_date_range[1]
-        )
-        & (price_data.commodity.isin(widget_commodity_values))
-        & (price_data.market.isin(widget_market_values))
-    ]
-    price_data = (
+    # price_data = price_data[
+    #     price_data.date.between(
+    #         widget_date_range[0], widget_date_range[1]
+    #     )
+    #     & (price_data.commodity.isin(widget_commodity_values))
+    #     & (price_data.market.isin(widget_market_values))
+    # ]
+    price_nat_data = (
         price_data.groupby(["date", "commodity", "unit"])
         .agg({"usdprice": "mean"})
         .reset_index()
     )
+    price_nat_data['market'] = "National"
+    price_data = pd.concat((price_data, price_nat_data), axis=0)
     price_data = price_data.set_index("date").groupby(
-        ["commodity", "unit"]
+        ["market", "commodity", "unit"]
     )
     price_summary = (
         price_data["usdprice"].apply(lambda x: x).reset_index()
@@ -83,105 +85,107 @@ def generate_figure_chart(data, widget_date_range, widget_market_values, widget_
         .reset_index()["usdprice"]
     )
     price_summary = (
-        price_summary.groupby(["commodity", "unit"])
+        price_summary.groupby(["market", "commodity", "unit"])
         .last()
         .reset_index()
     )
 
+    return price_summary
+
     # Generate Figure charts
-    charts = []
-    for item in widget_commodity_values:
-        # Calculate the title
-        data_filtered = price_summary[price_summary.commodity == item]
-        title_text = data_filtered.iloc[0]['commodity'] + ' /' + data_filtered.iloc[0]['unit']
+    # charts = []
+    # for item in widget_commodity_values:
+    #     # Calculate the title
+        # data_filtered = price_summary[price_summary.commodity == item]
+        # title_text = data_filtered.iloc[0]['commodity'] + ' /' + data_filtered.iloc[0]['unit']
         
-        chart = (
-            alt.Chart(
-                data_filtered,
-                title=alt.Title(
-                    text=title_text, align="center", fontSize=15
-                ),
-                width='container'
-            )
-            .mark_rect()
-            .encode()
-            .properties(height=30)
-        )
+        # chart = (
+        #     alt.Chart(
+        #         data_filtered,
+        #         title=alt.Title(
+        #             text=title_text, align="center", fontSize=15
+        #         ),
+        #         width='container'
+        #     )
+        #     .mark_rect()
+        #     .encode()
+        #     .properties(height=30)
+        # )
 
-        item_title = chart.mark_text(
-            align='right', baseline='middle', dx=-100
-        ).encode(
-            text=alt.value("Latest Average: "),
-            color=alt.value("black"),
-            opacity=alt.value(0.8),
-            size=alt.value(14),
-        )
+        # item_title = chart.mark_text(
+        #     align='right', baseline='middle', dx=-100
+        # ).encode(
+        #     text=alt.value("Latest Average: "),
+        #     color=alt.value("black"),
+        #     opacity=alt.value(0.8),
+        #     size=alt.value(14),
+        # )
         
-        item_value = chart.mark_text(
-            align='right', baseline='middle', dx=-30
-        ).encode(
-            text=alt.Text("usdprice:Q", format="$.2f"),
-            size=alt.value(18),
-        )
+        # item_value = chart.mark_text(
+        #     align='right', baseline='middle', dx=-30
+        # ).encode(
+        #     text=alt.Text("usdprice:Q", format="$.2f"),
+        #     size=alt.value(18),
+        # )
         
-        mom_value = chart.mark_text(
-            dx=70, align="left", baseline='middle'
-        ).encode(
-            text=alt.Text("mom:Q", format="+.2%"),
-            color=alt.condition(
-                "datum.mom<0",
-                alt.ColorValue("red"),
-                alt.ColorValue("green"),
-            ),
-            size=alt.value(14),
-        )
-        mom_title = chart.mark_text(
-            dx=30, align="left", baseline='middle'
-        ).encode(
-            text=alt.value("MoM:  "),
-            color=alt.condition(
-                "datum.mom<0",
-                alt.ColorValue("red"),
-                alt.ColorValue("green"),
-            ),
-            size=alt.value(14),
-        )
-        yoy_value = chart.mark_text(
-            dx=175, align="left", baseline='middle'
-        ).encode(
-            text=alt.Text("yoy:Q", format="+.2%"),
-            color=alt.condition(
-                "datum.yoy<0",
-                alt.ColorValue("red"),
-                alt.ColorValue("green"),
-            ),
-            size=alt.value(14),
-        )
-        yoy_title = chart.mark_text(
-            dx=140, align="left", baseline='middle'
-        ).encode(
-            text=alt.value("YoY:  "),
-            color=alt.condition(
-                "datum.yoy<0",
-                alt.ColorValue("red"),
-                alt.ColorValue("green"),
-            ),
-            size=alt.value(14),
-        )
-        chart = chart.encode(
-            color=alt.value("lightgray"), opacity=alt.value(0.2)
-        )
-        chart += (
-            item_value
-            + item_title
-            + mom_value
-            + mom_title
-            + yoy_value
-            + yoy_title
-        )
-        charts.append(chart)
+        # mom_value = chart.mark_text(
+        #     dx=70, align="left", baseline='middle'
+        # ).encode(
+        #     text=alt.Text("mom:Q", format="+.2%"),
+        #     color=alt.condition(
+        #         "datum.mom<0",
+        #         alt.ColorValue("red"),
+        #         alt.ColorValue("green"),
+        #     ),
+        #     size=alt.value(14),
+        # )
+        # mom_title = chart.mark_text(
+        #     dx=30, align="left", baseline='middle'
+        # ).encode(
+        #     text=alt.value("MoM:  "),
+        #     color=alt.condition(
+        #         "datum.mom<0",
+        #         alt.ColorValue("red"),
+        #         alt.ColorValue("green"),
+        #     ),
+        #     size=alt.value(14),
+        # )
+        # yoy_value = chart.mark_text(
+        #     dx=175, align="left", baseline='middle'
+        # ).encode(
+        #     text=alt.Text("yoy:Q", format="+.2%"),
+        #     color=alt.condition(
+        #         "datum.yoy<0",
+        #         alt.ColorValue("red"),
+        #         alt.ColorValue("green"),
+        #     ),
+        #     size=alt.value(14),
+        # )
+        # yoy_title = chart.mark_text(
+        #     dx=140, align="left", baseline='middle'
+        # ).encode(
+        #     text=alt.value("YoY:  "),
+        #     color=alt.condition(
+        #         "datum.yoy<0",
+        #         alt.ColorValue("red"),
+        #         alt.ColorValue("green"),
+        #     ),
+        #     size=alt.value(14),
+        # )
+        # chart = chart.encode(
+        #     color=alt.value("lightgray"), opacity=alt.value(0.2)
+        # )
+        # chart += (
+        #     item_value
+        #     + item_title
+        #     + mom_value
+        #     + mom_title
+        #     + yoy_value
+        #     + yoy_title
+        # )
+        # charts.append(chart)
 
-    return charts
+    # return charts
 
 def generate_line_chart(data, widget_date_range, widget_market_values, widget_commodity_values):
     """

@@ -120,8 +120,8 @@ def fill_missing_data(data, method="forward"):
     # Generate dataframe with full combinations of factors
     full_data_df = pd.DataFrame(
         itertools.product(
-            # pd.date_range(data["date"].min(), data["date"].max(), freq='MS') + pd.DateOffset(days=14),
-            data["date"].unique(),
+            pd.date_range(data["date"].min(), data["date"].max(), freq='MS') + pd.DateOffset(days=14),
+            # data["date"].unique(),
             data["market"].unique(),
             data["commodity"].unique(),
         ),
@@ -148,7 +148,7 @@ def fill_missing_data(data, method="forward"):
 
     return full_data_df
 
-def get_clean_data(data_json):
+def get_clean_data(data_df):
     """
     Returns JSON data containing cleaned data.
 
@@ -163,11 +163,12 @@ def get_clean_data(data_json):
         JSON string containing cleaned major data.
     """
 
-    data_df = pd.read_json(StringIO(data_json), orient='split')
+    # data_df = pd.read_json(StringIO(data_json), orient='split')
     data_df = filter_major_data(data_df)
     data_df = fill_missing_data(data_df)
 
-    return data_df.to_json(date_format='iso', orient='split')
+    # return data_df.to_json(date_format='iso', orient='split')
+    return data_df
 
 if __name__ == "__main__":
     pass
