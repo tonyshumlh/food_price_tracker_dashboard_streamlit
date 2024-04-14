@@ -1,8 +1,8 @@
 # Food Price Tracker <img src="img/logo_1.png" align="right" width=125 height=125 alt="" /
 
-[![GitHub issues](https://img.shields.io/github/issues/UBC-MDS/DSCI-532_2024_19_food-price-tracker.svg)](https://github.ubc.ca/MDS-2023-24/DSCI_532_individual-assignment_shumlh/issues)
-[![GitHub last commit](https://img.shields.io/github/last-commit/UBC-MDS/DSCI-532_2024_19_food-price-tracker.svg)](https://github.ubc.ca/MDS-2023-24/DSCI_532_individual-assignment_shumlh/commits/main)
-[![GitHub release](https://img.shields.io/github/release/UBC-MDS/DSCI-532_2024_19_food-price-tracker.svg)](https://github.ubc.ca/MDS-2023-24/DSCI_532_individual-assignment_shumlh/releases)
+[![GitHub issues](https://img.shields.io/github/issues/MDS-2023-24/DSCI_532_individual-assignment_shumlh.svg)](https://github.ubc.ca/MDS-2023-24/DSCI_532_individual-assignment_shumlh/issues)
+[![GitHub last commit](https://img.shields.io/github/last-commit/MDS-2023-24/DSCI_532_individual-assignment_shumlh.svg)](https://github.ubc.ca/MDS-2023-24/DSCI_532_individual-assignment_shumlh/commits/main)
+[![GitHub release](https://img.shields.io/github/release/MDS-2023-24/DSCI_532_individual-assignment_shumlh.svg)](https://github.ubc.ca/MDS-2023-24/DSCI_532_individual-assignment_shumlh/releases)
 
 
 ** The web application is a revised version of the [Group project](https://github.com/UBC-MDS/DSCI-532_2024_19_food-price-tracker) with different segmentations using Python package [Streamlit](https://docs.streamlit.io/) **
