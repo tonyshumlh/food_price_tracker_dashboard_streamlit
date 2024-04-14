@@ -4,10 +4,8 @@ import altair as alt
 import plotly.express as px
 import math
 
-from fetch_data import fetch_country_index, fetch_country_data
+from data import *
 from plotting import *
-from calc_index import *
-from data_preprocess import get_clean_data
 
 # Page configuration
 st.set_page_config(
