@@ -105,6 +105,10 @@ for i in range(num_markets+1):
 
 # Dashboard Detail
 for row_num, row in enumerate(rows_l0):
+    # To be refactored
+    num_row = math.floor(num_commodities**0.5)
+    num_col = math.ceil(num_commodities/num_row)
+
     with row[0]:
         market = values_markets[row_num]
         st.markdown(f'### {market}')
@@ -117,7 +121,8 @@ for row_num, row in enumerate(rows_l0):
         card_value = "${:.2f}".format(card_data['usdprice'].iloc[0])
         card_delta_mom = f"{card_data['mom'].iloc[0]:.2%} MoM"
         card_delta_yoy = f"{card_data['yoy'].iloc[0]:.2%} YoY"
-        with st.container(border=True):
+        card_help = "XX",
+        with st.container(border=True, height=125*num_row):
             st.metric(label=card_name,
                     value=card_value,
                     delta = (card_delta_mom if relative_change_dropdown == 'Month-over-Month' else card_delta_yoy),
@@ -126,8 +131,6 @@ for row_num, row in enumerate(rows_l0):
 
     with row[1][1]:
         # To be refactored
-        num_row = math.floor(num_commodities**0.5)
-        num_col = math.ceil(num_commodities/num_row)
         row_l2 = []
         for i in range(num_row):
             row_l2.append(st.columns(num_col, gap='small'))
