@@ -1,4 +1,4 @@
-# Food Price Tracker <img src="img/logo_1.png" align="right" width=125 height=125 alt="" /
+# Food Price Tracker <img src="img/logo_1.png" align="right" width=125 height=125 alt="" />
 
 ** The web application is a revised version of the [Group project](https://github.com/UBC-MDS/DSCI-532_2024_19_food-price-tracker) with different segmentations using Python package [Streamlit](https://docs.streamlit.io/) **
 
