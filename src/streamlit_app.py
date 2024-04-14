@@ -50,6 +50,7 @@ with st.sidebar:
         max_value=max_date_allowed,
         )
 
+    ## Commodity
     commodities_options = country_data.commodity.value_counts().index.tolist()
     commodities_selection = commodities_options[:2]
     commodities_dropdown = st.multiselect(label='Commodities', 
@@ -57,6 +58,7 @@ with st.sidebar:
                                           default=commodities_selection,
                                           )
 
+    ## Market
     markets_options = country_data.market.value_counts().index.tolist()
     markets_selection = markets_options[:2]
     markets_dropdown = st.multiselect(label='Markets', 
@@ -64,6 +66,7 @@ with st.sidebar:
                                       default=markets_selection,
                                       )
     
+    ## Relative Change
     relative_change_options = ['Month-over-Month', 'Year-over-Year']
     relative_change_dropdown = st.selectbox(
         label='Relative Change',
@@ -73,15 +76,17 @@ with st.sidebar:
 
 # Elements
 country_data = generate_food_price_index_data(country_data, pd.to_datetime(date_range), markets_dropdown, commodities_dropdown)
+country_data = generate_overall_data(country_data)
 commodities_line = generate_line_chart(
-    country_data, pd.to_datetime(date_range), markets_dropdown, commodities_dropdown
+    # country_data, pd.to_datetime(date_range), markets_dropdown, commodities_dropdown
+    country_data
 )
 commodities_figure = generate_figure_chart(
     country_data
 )
 num_markets = len(markets_dropdown)
 num_commodities = len(commodities_dropdown)
-values_markets = ['National'] + markets_dropdown
+values_markets = ['Overall'] + markets_dropdown
 values_commodities = ['Food Price Index'] + commodities_dropdown
 
 # Dashboard Main Panel
@@ -92,7 +97,7 @@ for i in range(num_markets+1):
     first_row = st.empty()
     rows_l1.append(first_row)
 
-    second_row = st.columns([4, 6], gap='medium')
+    second_row = st.columns([4, 6], gap='small')
     rows_l1.append(second_row)
 
     third_row = st.empty()
@@ -121,11 +126,12 @@ for row_num, row in enumerate(rows_l0):
         card_value = "${:.2f}".format(card_data['usdprice'].iloc[0])
         card_delta_mom = f"{card_data['mom'].iloc[0]:.2%} MoM"
         card_delta_yoy = f"{card_data['yoy'].iloc[0]:.2%} YoY"
-        card_help = "XX",
+        card_help = 'Food Price Index is the total price of selected commodities'
         with st.container(border=True, height=125*num_row):
             st.metric(label=card_name,
                     value=card_value,
                     delta = (card_delta_mom if relative_change_dropdown == 'Month-over-Month' else card_delta_yoy),
+                    help = card_help,
                     )
         commodity_num += 1
 
@@ -155,6 +161,5 @@ for row_num, row in enumerate(rows_l0):
                         st.empty()
 
     with row[2]:
-        with st.container(border=True):
-            st.altair_chart(commodities_line[0], use_container_width=True)
+        st.altair_chart(commodities_line[market], use_container_width=True)
 

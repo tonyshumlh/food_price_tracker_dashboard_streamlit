@@ -75,3 +75,58 @@ def generate_food_price_index_data(data, widget_date_range, widget_market_values
     price_data = pd.concat((price_data, index), axis=0, ignore_index=True)
 
     return price_data
+
+def generate_overall_data(data):
+    """
+    Generate overall data based on the selected markets and commodities.
+
+    Parameters
+    ----------
+    data : pandas.DataFrame
+        The dataset containing price information for various commodities across different markets.
+
+    Returns
+    -------
+    pandas.DataFrame
+        A DataFrame containing the original data appended with the calculated food price index
+        for the selected markets and commodities. 
+
+    Examples
+    --------
+    >>> import pandas as pd
+    >>> data = pd.DataFrame({
+    ...     'date': ['2022-01-01', '2022-01-01', '2022-01-02'],
+    ...     'market': ['A', 'B', 'A'],
+    ...     'latitude': [1, 2, 1],
+    ...     'longitude': [1, 2, 1],
+    ...     'commodity': ['Rice', 'Radish', 'Sugar'],
+    ...     'unit': ['kg', 'kg', 'kg'],
+    ...     'usdprice': [1.0, 2.0, 3.0]
+    ... })
+    >>> generate_food_price_index_data(data)
+    """
+
+    # Default Info
+    columns_to_keep = [
+        "date",
+        "market",
+        "latitude",
+        "longitude",
+        "commodity",
+        "unit",
+        "usdprice",
+    ]
+    
+    # Generate Food Price Index Data
+    price_data = data[columns_to_keep]
+
+    # Calculate index (formula: average of the index by date and commodity)
+    overall_data = (
+        price_data.groupby(["date", "commodity", "unit"])
+        .agg({"usdprice": "mean"})
+        .reset_index()
+    )
+    overall_data['market'] = "Overall"
+    price_data = pd.concat((price_data, overall_data), axis=0, ignore_index=True)
+
+    return price_data

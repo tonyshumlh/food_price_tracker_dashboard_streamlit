@@ -51,13 +51,6 @@ def generate_figure_chart(data):
 
     # Generate latest average price and period-over-period change
     price_data = data[columns_to_keep]
-    price_nat_data = (
-        price_data.groupby(["date", "commodity", "unit"])
-        .agg({"usdprice": "mean"})
-        .reset_index()
-    )
-    price_nat_data['market'] = "National"
-    price_data = pd.concat((price_data, price_nat_data), axis=0)
     price_data = price_data.set_index("date").groupby(
         ["market", "commodity", "unit"]
     )
@@ -82,7 +75,7 @@ def generate_figure_chart(data):
 
     return price_summary
 
-def generate_line_chart(data, widget_date_range, widget_market_values, widget_commodity_values):
+def generate_line_chart(data):
     """
     Generates a list of line charts, each representing the price trends of different commodities over time within specified marketplaces.
 
@@ -117,7 +110,7 @@ def generate_line_chart(data, widget_date_range, widget_market_values, widget_co
     # Filter the data for the selected time period and markets
     price_data = data
 
-    charts = []
+    charts = {}
 
     # Change the default color scheme of Altair
     custom_color_scheme = ['#f58518', '#72b7b2', '#e45756', '#4c78a8', '#54a24b',
@@ -125,7 +118,7 @@ def generate_line_chart(data, widget_date_range, widget_market_values, widget_co
     custom_color_scale = alt.Scale(range=custom_color_scheme)
 
     # Create charts for each of the commodity
-    for market in widget_market_values:
+    for market in price_data['market'].unique():
         # Filter the data for the specific commodity
         market_data = price_data[price_data.market.isin([market])]
      
@@ -140,6 +133,7 @@ def generate_line_chart(data, widget_date_range, widget_market_values, widget_co
             color=alt.Color('commodity:N', legend=alt.Legend(title='Commodity'), scale=custom_color_scale),
             tooltip=[
                 alt.Tooltip('date:T', title='Time', format='%Y-%m'),
+                alt.Tooltip('commodity', title='Commodity'),
                 alt.Tooltip('usdprice:Q', title='Price in USD', format='.2f')
             ]
         # ).properties(
@@ -153,7 +147,7 @@ def generate_line_chart(data, widget_date_range, widget_market_values, widget_co
         )
 
         # Add the chart to the list of charts
-        charts.append(chart)
+        charts[market] = chart
 
     return charts
 
