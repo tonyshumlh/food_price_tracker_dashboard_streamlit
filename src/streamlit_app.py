@@ -17,8 +17,12 @@ alt.themes.enable("dark")
 
 # Sidebar
 with st.sidebar:
-    st.title('Food Price Tracker')
-    
+    col1, col2 = st.columns([2, 8], gap='small')
+    with col1:
+        st.image('img/logo_1.png', width=56)
+    with col2:
+        st.markdown('<p style="font-family:sans-serif; font-size: 24px;">\n <strong>Food Price Tracker</strong></p>', unsafe_allow_html=True)
+
     ## Country
     country_options = sorted(fetch_country_index().index.to_list())
     country_dropdown = st.selectbox(

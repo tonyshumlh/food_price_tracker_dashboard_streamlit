@@ -10,7 +10,7 @@ from hdx.data.dataset import Dataset
 # create HDX configuration
 Configuration.create(
     hdx_site="prod",
-    user_agent="DSCI-532_2024_19_food-price-tracker",
+    user_agent="DSCI-532_2024_19_food-price-tracker-indiv",
     hdx_read_only=True,
 )
 
