@@ -145,11 +145,11 @@ for row_num, row in enumerate(rows_l0):
         secondary = values_secondary[secondary_num]
         card_name = secondary
         card_data = country_figures[(country_figures[col_primary] == primary) & (country_figures[col_secondary] == secondary)]
-        card_value = "${:.2f}".format(card_data['usdprice'].iloc[0])
+        card_value = "US${:.2f}".format(card_data['usdprice'].iloc[0])
         card_delta_mom = f"{card_data['mom'].iloc[0]:.2%} MoM"
         card_delta_yoy = f"{card_data['yoy'].iloc[0]:.2%} YoY"
         card_help = ('Overall is the average price of selected markets' if view_selection else 'Food Price Index is the total price of selected commodities')
-        with st.container(border=True, height=125*num_block_row):
+        with st.container(border=True, height=140*num_block_row - 15):
             st.metric(label = card_name,
                     value = card_value,
                     delta = (card_delta_mom if relative_change_dropdown == 'Month-over-Month' else card_delta_yoy),
@@ -164,7 +164,7 @@ for row_num, row in enumerate(rows_l0):
                     secondary = values_secondary[secondary_num]
                     card_data = country_figures[(country_figures[col_primary] == primary) & (country_figures[col_secondary] == secondary)]
                     card_name = f"{secondary}" + (f" / {card_data['unit'].iloc[0]}" if not view_selection else "")
-                    card_value = "${:.2f}".format(card_data['usdprice'].iloc[0])
+                    card_value = "US${:.2f}".format(card_data['usdprice'].iloc[0])
                     card_delta_mom = f"{card_data['mom'].iloc[0]:.2%} MoM"
                     card_delta_yoy = f"{card_data['yoy'].iloc[0]:.2%} YoY"
                     with st.container(border=True):
