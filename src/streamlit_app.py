@@ -21,7 +21,7 @@ with st.sidebar:
     with col1:
         st.image('img/logo_1.png', width=56)
     with col2:
-        st.markdown('<p style="font-family:sans-serif; font-size: 24px;">\n <strong>Food Price Tracker</strong></p>', unsafe_allow_html=True)
+        st.markdown('<p style="font-family:sans-serif; font-size: 24px;"><strong>Food Price Tracker</strong></p>', unsafe_allow_html=True)
 
     ## Country
     country_options = sorted(fetch_country_index().index.to_list())
@@ -38,6 +38,17 @@ country_data = get_clean_data(country_data)
 
 # Sidebar
 with st.sidebar:
+    ## View
+    st.markdown('<p style="font-size: 14px;">View</strong></p>', unsafe_allow_html=True)
+    col1, col2, col3 = st.columns(3, gap='small')
+    with col1:
+        st.write('Market')
+    with col2:
+        view_selection = st.toggle(label='')
+    with col3:
+        st.write('Commodity')
+   
+
     ## Date
     min_date_allowed = country_data.date.min()
     max_date_allowed = country_data.date.max()
@@ -79,19 +90,33 @@ with st.sidebar:
 # Elements
 country_data = generate_food_price_index_data(country_data, pd.to_datetime(date_range), markets_dropdown, commodities_dropdown)
 country_data = generate_overall_data(country_data)
-commodities_line = generate_line_chart(country_data)
-commodities_figure = generate_figure_chart(country_data)
+country_lines = generate_line_chart(country_data)
+country_figures = generate_figure_chart(country_data)
 
 num_markets = len(markets_dropdown)
 num_commodities = len(commodities_dropdown)
 values_markets = ['Overall'] + markets_dropdown
 values_commodities = ['Food Price Index'] + commodities_dropdown
-num_block_row = math.floor(num_commodities**0.5)
-num_block_col = math.ceil(num_commodities/num_block_row)
+if view_selection:
+    num_primary = num_commodities
+    num_secondary = num_markets
+    values_primary = values_commodities
+    values_secondary = values_markets
+    col_primary = 'commodity'
+    col_secondary = 'market'
+else:
+    num_primary = num_markets
+    num_secondary = num_commodities
+    values_primary = values_markets
+    values_secondary = values_commodities
+    col_primary = 'market'
+    col_secondary = 'commodity'
+num_block_row = math.floor(num_secondary**0.5)
+num_block_col = math.ceil(num_secondary/num_block_row)
 
 # Dashboard Main Panel Layout
 rows_l0 = []
-for i in range(num_markets+1):
+for i in range(num_primary+1):
     rows_l1 = []
 
     first_row = st.empty()
@@ -111,34 +136,34 @@ for i in range(num_markets+1):
 # Dashboard Detail
 for row_num, row in enumerate(rows_l0):
     with row[0]:
-        market = values_markets[row_num]
-        st.markdown(f'### {market}')
+        primary = values_primary[row_num]
+        st.markdown(f'### {primary}')
 
     ## Figure Chart
     with row[1][0]:
-        commodity_num = 0
-        commodity = values_commodities[commodity_num]
-        card_name = commodity
-        card_data = commodities_figure[(commodities_figure['commodity'] == commodity) & (commodities_figure['market'] == market)]
+        secondary_num = 0
+        secondary = values_secondary[secondary_num]
+        card_name = secondary
+        card_data = country_figures[(country_figures[col_primary] == primary) & (country_figures[col_secondary] == secondary)]
         card_value = "${:.2f}".format(card_data['usdprice'].iloc[0])
         card_delta_mom = f"{card_data['mom'].iloc[0]:.2%} MoM"
         card_delta_yoy = f"{card_data['yoy'].iloc[0]:.2%} YoY"
-        card_help = 'Food Price Index is the total price of selected commodities'
+        card_help = ('Overall is the average price of selected markets' if view_selection else 'Food Price Index is the total price of selected commodities')
         with st.container(border=True, height=125*num_block_row):
             st.metric(label = card_name,
                     value = card_value,
                     delta = (card_delta_mom if relative_change_dropdown == 'Month-over-Month' else card_delta_yoy),
                     help = card_help,
                     )
-        commodity_num += 1
+        secondary_num += 1
             
     for col_num in range(num_block_col):
         with row[1][col_num+1]:
             for _ in range(num_block_row):
-                if commodity_num <= num_commodities:
-                    commodity = values_commodities[commodity_num]
-                    card_data = commodities_figure[(commodities_figure['commodity'] == commodity) & (commodities_figure['market'] == market)]
-                    card_name = f"{commodity} / {card_data['unit'].iloc[0]}"
+                if secondary_num <= num_secondary:
+                    secondary = values_secondary[secondary_num]
+                    card_data = country_figures[(country_figures[col_primary] == primary) & (country_figures[col_secondary] == secondary)]
+                    card_name = f"{secondary}" + (f" / {card_data['unit'].iloc[0]}" if not view_selection else "")
                     card_value = "${:.2f}".format(card_data['usdprice'].iloc[0])
                     card_delta_mom = f"{card_data['mom'].iloc[0]:.2%} MoM"
                     card_delta_yoy = f"{card_data['yoy'].iloc[0]:.2%} YoY"
@@ -147,13 +172,13 @@ for row_num, row in enumerate(rows_l0):
                                 value = card_value,
                                 delta = (card_delta_mom if relative_change_dropdown == 'Month-over-Month' else card_delta_yoy),
                                 )
-                    commodity_num += 1
+                    secondary_num += 1
                 else:
                     st.empty()
 
     ## Line Chart
     with row[2]:
-        st.altair_chart(commodities_line[market], use_container_width=True)
+        st.altair_chart(country_lines[primary], use_container_width=True)
 
 st.caption("""
         Food Price Tracker is developed by Tony Shum.  

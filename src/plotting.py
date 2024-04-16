@@ -42,8 +42,6 @@ def generate_figure_chart(data):
     columns_to_keep = [
         "date",
         "market",
-        # "latitude",
-        # "longitude",
         "commodity",
         "unit",
         "usdprice",
@@ -120,10 +118,10 @@ def generate_line_chart(data):
     # Create charts for each of the commodity
     for market in price_data['market'].unique():
         # Filter the data for the specific commodity
-        market_data = price_data[price_data.market.isin([market])]
+        item_data = price_data[price_data.market.isin([market])]
      
         # Create the chart
-        chart = alt.Chart(market_data).mark_line(
+        chart = alt.Chart(item_data).mark_line(
             size=3,
             interpolate='monotone', 
             point=alt.OverlayMarkDef(shape='circle', size=50, filled=True)
@@ -136,8 +134,6 @@ def generate_line_chart(data):
                 alt.Tooltip('commodity', title='Commodity'),
                 alt.Tooltip('usdprice:Q', title='Price in USD', format='.2f')
             ]
-        # ).properties(
-#            title=alt.TitleParams(f'{commodity} Price')
         ).configure_view(
             strokeWidth=0,
         ).configure_axisX(
@@ -148,6 +144,36 @@ def generate_line_chart(data):
 
         # Add the chart to the list of charts
         charts[market] = chart
+
+    # Create charts for each of the market
+    for commodity in price_data['commodity'].unique():
+        # Filter the data for the specific market
+        item_data = price_data[price_data.commodity.isin([commodity])]
+     
+        # Create the chart
+        chart = alt.Chart(item_data).mark_line(
+            size=3,
+            interpolate='monotone', 
+            point=alt.OverlayMarkDef(shape='circle', size=50, filled=True)
+        ).encode(
+            x=alt.X('date:T', axis=alt.Axis(format='%Y-%m', title='Time')),
+            y=alt.Y('usdprice:Q', title='Price in USD', scale=alt.Scale(zero=False)),
+            color=alt.Color('market:N', legend=alt.Legend(title='Market'), scale=custom_color_scale),
+            tooltip=[
+                alt.Tooltip('date:T', title='Time', format='%Y-%m'),
+                alt.Tooltip('market', title='Market'),
+                alt.Tooltip('usdprice:Q', title='Price in USD', format='.2f')
+            ]
+        ).configure_view(
+            strokeWidth=0,
+        ).configure_axisX(
+            grid=False
+        ).configure_axisY(
+            grid=False
+        )
+
+        # Add the chart to the list of charts
+        charts[commodity] = chart
 
     return charts
 
