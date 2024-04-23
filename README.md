@@ -26,7 +26,7 @@ Tony Shum
 
 ### Website Link
 
-Food Price Tracker can be accessed through the following link: {TBC}
+Food Price Tracker can be accessed through the following link: https://food-price-tracker-dashboard.streamlit.app/
 
 The dashboard is composed of a sidebar for user input and a data display section. In the sidebar, you can select the country, time range, specific commodities, and markets you wish to view. In the data display section, you can see the actual and average value, Month-over-Month and Year-over-Year change rates of the overall Food Price Index as well as of each commodity.
 
@@ -45,16 +45,16 @@ If you want to report a problem or give an suggestion, we would love for you to 
 1. Clone this repository to your computer.
 
 ```bash
- git clone git@github.ubc.ca:MDS-2023-24/DSCI_532_individual-assignment_shumlh.git
+ git clone https://github.com/tonyshumlh/food_price_tracker_dashboard_streamlit.git
 ```
 ```bash
- cd DSCI_532_individual-assignment_shumlh/
+ cd food_price_tracker_dashboard_streamlit/
 ```
 
 2. Install the conda environment.
 
 ```bash
- conda env create -f environment.yml
+ conda env create -f environment_local.yml
 ```
 
 3. Activate the installed environment.

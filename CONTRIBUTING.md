@@ -40,9 +40,9 @@ If you are proposing a feature:
 
 ## Get Started!
 
-Ready to contribute? Here's how to set up `DSCI_532_individual-assignment_shumlh` for local development.
+Ready to contribute? Here's how to set up `food_price_tracker_dashboard_streamlit` for local development.
 
-1. Download a copy of `DSCI_532_individual-assignment_shumlh` locally.
+1. Download a copy of `food_price_tracker_dashboard_streamlit` locally.
 2. Use `git` (or similar) to create a branch for local development and make your changes:
 
 ```console
