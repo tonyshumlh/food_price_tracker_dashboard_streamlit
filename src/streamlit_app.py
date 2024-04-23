@@ -143,7 +143,7 @@ for row_num, row in enumerate(rows_l0):
     with row[1][0]:
         secondary_num = 0
         secondary = values_secondary[secondary_num]
-        card_name = secondary
+        card_name = secondary + " — Latest"
         card_data = country_figures[(country_figures[col_primary] == primary) & (country_figures[col_secondary] == secondary)]
         card_value = "US${:.2f}".format(card_data['usdprice'].iloc[0])
         card_delta_mom = f"{card_data['mom'].iloc[0]:.2%} MoM"
@@ -163,7 +163,7 @@ for row_num, row in enumerate(rows_l0):
                 if secondary_num <= num_secondary:
                     secondary = values_secondary[secondary_num]
                     card_data = country_figures[(country_figures[col_primary] == primary) & (country_figures[col_secondary] == secondary)]
-                    card_name = f"{secondary}" + (f" / {card_data['unit'].iloc[0]}" if not view_selection else "")
+                    card_name = f"{secondary}" + (f" / {card_data['unit'].iloc[0]}" if not view_selection else "") + " — Latest"
                     card_value = "US${:.2f}".format(card_data['usdprice'].iloc[0])
                     card_delta_mom = f"{card_data['mom'].iloc[0]:.2%} MoM"
                     card_delta_yoy = f"{card_data['yoy'].iloc[0]:.2%} YoY"
