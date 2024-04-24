@@ -1,22 +1,23 @@
 # Food Price Tracker <img src="img/logo_1.png" align="right" width=125 height=125 alt="" />
 
-** The web application is a revised version of the [Group project](https://github.com/UBC-MDS/DSCI-532_2024_19_food-price-tracker) with different segmentations using Python package [Streamlit](https://docs.streamlit.io/) **
+** The web application is a revised version of the [Group project](https://github.com/UBC-MDS/DSCI-532_2024_19_food-price-tracker) with enhanced segmentations and functionalities using Python package [Streamlit](https://docs.streamlit.io/) **
 
-Visualize and compare regional price trends from countries across the world.
+Visualize and compare regional price trends across different regions worldwide.
 
 ## Welcome
 
-Thank you for visiting the Food Price Tracker project repository!
-The project aims to provide an intuitive, interactive data visualization platform for drawing food price insights and enhancing cross-sector collaboration to address worldwide food-related challenges.
-Our project makes use of the Global Food Prices dataset, openly available via [The Humanitarian Data Exchange (HDX)](https://data.humdata.org/dataset/global-wfp-food-prices). 
-This dataset originates from the World Food Programme Price Database and includes pricing for items such as maize, rice, beans, fish, and sugar.
-We invite you to utilize our Food Price Tracker and welcome any contributions towards its enhancement.
+Welcome to the Food Price Tracker project repository!
+The project is dedicated to providing an intuitive and interactive data visualization platform aimed at offering insights into food price trends globally. 
+By leveraging the Global Food Prices dataset, which is openly accessible via [The Humanitarian Data Exchange (HDX)](https://data.humdata.org/dataset/global-wfp-food-prices), the platform facilitates cross-sector collaboration to address various food-related challenges.
+This dataset originates from the World Food Programme Price Database and encompasses pricing information for essential items such as maize, rice, beans, fish, and sugar.
+
+We invite you to explore our Food Price Tracker and encourage contributions to enhance its functionality and utility. Thank you!
 
 ## Motivation and Purpose
 
-Access to reliable food pricing information is crucial for informed decision-making in public policymaking and business strategy. However, we observed a lack of open, easy-to-use online platforms providing comprehensive global trends of food price with regional details. Key challenges identified include 1) scattered and unorganized regional data requiring technical expertise to navigate, and 2) existing platforms being unintuitive for non-technical stakeholders for effective daily use.
+Access to reliable food pricing information is essential for making informed decisions in public policymaking and business strategy. However, we have observed a lack of accessible online platforms offering comprehensive global food price trends with regional details. The main challenges identified include scattered and unorganized regional data which often require technical expertise to navigate effectively, and existing platforms that are not user-friendly for non-technical stakeholders.
 
-To address this, we have developed this interactive platform for global food price trends with regional resolution. Our platform aims to empower stakeholders with insights for informed decision-making on food prices worldwide. We wish to enhance collaboration across sectors to address food-related challenges on a global scale.
+To tackle these challenges, we have developed an interactive platform for tracking global food price trends with regional resolution. Our platform aims to empower stakeholders with insights to make informed decisions regarding food prices worldwide. We seek to foster collaboration across sectors to address food-related challenges on a global scale.
 
 ## Contributors
 
@@ -28,11 +29,11 @@ Tony Shum
 
 Food Price Tracker can be accessed through the following link: https://food-price-tracker-dashboard.streamlit.app/
 
-The dashboard is composed of a sidebar for user input and a data display section. In the sidebar, you can select the country, time range, specific commodities, and markets you wish to view. In the data display section, you can see the actual and average value, Month-over-Month and Year-over-Year change rates of the overall Food Price Index as well as of each commodity.
+The dashboard comprises a user input sidebar and a data display section. Within the sidebar, users can select their preferred country, view type (commodity-based, market-based), date range, specific commodities, and markets and the relative change metricsfor viewing. In the data display section, users can observe the actual and average values, as well as the relative change (e.g. Month-over-Month change rates), both for the Food Price Index and individual commodities, or for the Nationalw-wide overall and individual markets.
 
 ### Usage Demonstration
 
-{TBC}
+https://github.com/tonyshumlh/food_price_tracker_dashboard_streamlit/assets/38127942/62340447-5916-4b6e-984b-8325e083cf59
 
 ### Need Support?
 
