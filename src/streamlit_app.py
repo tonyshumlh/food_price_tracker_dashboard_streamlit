@@ -80,7 +80,7 @@ with st.sidebar:
                                       )
     
     ## Relative Change
-    relative_change_options = ['Month-over-Month', 'Year-over-Year']
+    relative_change_options = ['Month-over-Month', 'Quarter-over-Quarter', 'Year-over-Year']
     relative_change_dropdown = st.selectbox(
         label='Relative Change',
         options=relative_change_options,
@@ -146,13 +146,20 @@ for row_num, row in enumerate(rows_l0):
         card_name = secondary + " — Latest"
         card_data = country_figures[(country_figures[col_primary] == primary) & (country_figures[col_secondary] == secondary)]
         card_value = "US${:.2f}".format(card_data['usdprice'].iloc[0])
-        card_delta_mom = f"{card_data['mom'].iloc[0]:.2%} MoM"
-        card_delta_yoy = f"{card_data['yoy'].iloc[0]:.2%} YoY"
-        card_help = ('Overall is the average price of selected markets' if view_selection else 'Food Price Index is the total price of selected commodities')
+        if relative_change_dropdown == 'Month-over-Month':
+            card_delta = f"{card_data['mom'].iloc[0]:.2%} MoM"
+        elif relative_change_dropdown == 'Quarter-over-Quarter':
+            card_delta = f"{card_data['qoq'].iloc[0]:.2%} QoQ"
+        elif relative_change_dropdown == 'Year-over-Year':
+            card_delta = f"{card_data['yoy'].iloc[0]:.2%} YoY"
+        if view_selection:
+            card_help = 'Overall is the average price of the selected markets'
+        else:
+            card_help = 'Food Price Index is the total price of the selected commodities'
         with st.container(border=True, height=140*num_block_row - 15):
             st.metric(label = card_name,
                     value = card_value,
-                    delta = (card_delta_mom if relative_change_dropdown == 'Month-over-Month' else card_delta_yoy),
+                    delta = card_delta,
                     help = card_help,
                     )
         secondary_num += 1
@@ -165,12 +172,16 @@ for row_num, row in enumerate(rows_l0):
                     card_data = country_figures[(country_figures[col_primary] == primary) & (country_figures[col_secondary] == secondary)]
                     card_name = f"{secondary}" + (f" / {card_data['unit'].iloc[0]}" if not view_selection else "") + " — Latest"
                     card_value = "US${:.2f}".format(card_data['usdprice'].iloc[0])
-                    card_delta_mom = f"{card_data['mom'].iloc[0]:.2%} MoM"
-                    card_delta_yoy = f"{card_data['yoy'].iloc[0]:.2%} YoY"
+                    if relative_change_dropdown == 'Month-over-Month':
+                        card_delta = f"{card_data['mom'].iloc[0]:.2%} MoM"
+                    elif relative_change_dropdown == 'Quarter-over-Quarter':
+                        card_delta = f"{card_data['qoq'].iloc[0]:.2%} QoQ"
+                    elif relative_change_dropdown == 'Year-over-Year':
+                        card_delta = f"{card_data['yoy'].iloc[0]:.2%} YoY"
                     with st.container(border=True):
                         st.metric(label = card_name,
                                 value = card_value,
-                                delta = (card_delta_mom if relative_change_dropdown == 'Month-over-Month' else card_delta_yoy),
+                                delta = card_delta,
                                 )
                     secondary_num += 1
                 else:
