@@ -28,7 +28,7 @@ with st.sidebar:
     country_dropdown = st.selectbox(
         label='Country',
         options=country_options,
-        index=country_options.index('Japan'),
+        index=country_options.index('Ukraine'),
         placeholder="Select a country...",
         )
 
